@@ -1,37 +1,39 @@
-# Booking API Tests
+# Booking API Test Automation
 
-NUnit integration tests for the [Restful Booker API](https://restful-booker.herokuapp.com).
-The suite uses .NET 8 and RestSharp to create bookings and retrieve them from
-the public sandbox API.
+A small API test project for the [Restful Booker API](https://restful-booker.herokuapp.com), built with .NET 8, NUnit, and RestSharp. It keeps the test scenarios straightforward while separating HTTP requests, booking operations, reusable steps, and test data.
 
-## Requirements
+## Project structure
 
-- .NET 8 SDK
-- Network access to `https://restful-booker.herokuapp.com`
+```text
+Business/
+  BookingDataFactory.cs   Creates sample booking data
+  BookingService.cs       Exposes booking operations to the steps
+Clients/
+  BookingClient.cs        Sends requests to the booking API
+  BaseApiClient.cs        Shared HTTP client setup
+Models/                   Booking request and response models
+Steps/
+  BookingSteps.cs         Reusable actions and response assertions
+Tests/
+  BookingTests.cs         Create and retrieve booking scenarios
+docs/
+  manual-test-case.md     Manual investigation of invalid date ranges
+```
 
-No separate booking application or browser is needed to run the current tests.
+`Clients/` is the API-test equivalent of a UI page-object layer: it keeps endpoint and HTTP details out of the test scenarios.
+
+## Tests
+
+- Create a booking and verify its ID and returned details.
+- Retrieve a newly created booking by ID and verify its details.
 
 ## Run the tests
 
-From the repository root:
+Requirements: .NET 8 SDK and network access to the public API.
 
 ```powershell
 dotnet restore
 dotnet test
 ```
 
-The tests call the public sandbox directly. They create bookings and do not
-delete them, so runs can leave test records in the shared service. Results
-also depend on that external service being available.
-
-## What's covered
-
-- Creating a booking with valid data and checking the response status, booking
-  ID, and first name.
-- Retrieving a newly created booking by ID and checking guest and price fields.
-- Sending booking requests with blank names or a negative price. The current
-  test allows status codes 200, 400, or 500, so it does not assert that these
-  values are rejected.
-
-A separate manual investigation is
-described in [`docs/manual-test-case.md`](docs/manual-test-case.md) with bug report
+The tests create bookings in the shared public sandbox and do not delete them. Results depend on that external service being available.
